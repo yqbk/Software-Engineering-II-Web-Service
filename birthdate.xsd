@@ -2,40 +2,55 @@
 
 <wsdl:description xmlns:wsdl="http://www.w3.org/ns/wsdl"
                   xmlns:wsoap="http://www.w3.org/ns/wsdl/soap"
-                  xmlns:umr="http://www.example.org/dateToAge/"
-                  targetNamespace="http://www.example.org/dateToAge/">
+                  xmlns:age="http://www.example.org/dateToAge"
+                  targetNamespace="http://www.example.org/dateToAge">
 
   <wsdl:types>
     <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-                targetNamespace="http://www.example.org/dateToAge/">
-      <xsd:element name="date" type="xsd:simplyType" />
-      <xsd:element name="ageResponse" type="xsd:float" />
+                targetNamespace="http://www.example.org/dateToAge">
+
+      <xsd:element name="date">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:dateTime">
+            <xsd:pattern value="\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d[+\-]\d\d:\d\d" />
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+
+      <xsd:element name="getAgeResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="ageResponse" type="xsd:decimal" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
     </xsd:schema>
   </wsdl:types>
 
-  <wsdl:interface name="ageCalculatorInterface" >
-    <wsdl:operation name="dateToAge"
-                    pattern="http://www.w3.org/ns/wsdl/in-out"
-                    style="http://www.w3.org/ns/wsdl/style/iri" >
+  <wsdl:interface name="getAgeInterface" >
+    <wsdl:operation name="getAge"
+                    pattern="http://www.w3.org/ns/wsdl/in-out" >
+                    <!-- style="http://www.w3.org/ns/wsdl/style/iri" > -->
       <wsdl:input messageLabel="In"
-                  element="umr:date" />
+                  element="age:getDate" />
       <wsdl:output messageLabel="Out"
-                   element="umr:ageResponse" />
+                   element="age:getAgeResponse" />
     </wsdl:operation>
   </wsdl:interface>
 
-  <wsdl:binding name="ageCalculatorBinding"
-                interface="umr:umrechnerInterface"
+  <wsdl:binding name="getTempBinding"
+                interface="age:getTempInterface"
                 type="http://www.w3.org/ns/wsdl/soap"
-                wsoap:protocol="http://www.w3.org/2003/05/soap/bindings/HTTP/" >
-    <wsdl:operation ref="umr:dateToAge"
-                    wsoap:mep="http://www.w3.org/2003/05/soap/mep/soap-response" />
+                wsoap:protocol="http://www.w3.org/2003/05/soap/bindings/HTTP">
+    <wsdl:operation ref="age:getAge"
+                    wsoap:mep="http://www.w3.org/2003/05/soap/mep/soap-response"/>
   </wsdl:binding>
 
-  <wsdl:service name="ageCalculatorService"
-	  	          interface="umr:umrechnerInterface">
-    <wsdl:endpoint name="ageEndpoint"
-                   binding="umr:ageCalculatorBinding"
+  <wsdl:service name="getAgeService"
+	  	          interface="age:getAgeInterface">
+    <wsdl:endpoint name="getAgeEndpoint"
+                   binding="age:getAgeBinding"
                    address="http://localhost:8080/axis2/services/ageCalculatorService" />
   </wsdl:service>
 </wsdl:description>
